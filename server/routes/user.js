@@ -4,6 +4,8 @@ const jwt = require('jsonwebtoken');
 const secret = 'secert';
 const User = require('../models/user');
 const Transactions = require('../models/transactions');
+const bcrypt = require('bcrypt-nodejs');
+
 const maxBalance = 2000;
 
 
@@ -33,29 +35,32 @@ function createToken(email) {
 //Create/Register a user 
 // Передаём {username, password, email}
 
-router.post('/users', async (req, res) => {
+router.post('/users', (req, res) => {
     if (req.body.username && req.body.email && req.body.password) {
-        const user = await User.findOne({
+        User.findOne({
             email: req.body.email
-        });
-        if (user) {
-            return res.status(400).send('A user with that email already exists');
-        } else {
-            const user = new User({
-                username: req.body.username,
-                email: req.body.email,
-                password: req.body.password
-            });
+        }).then(user => {
+            if (user) {
+                return res.status(400).send('A user with that email already exists');
+            } else {
+                bcrypt.hash(req.body.password, null, null, (err, hash) => {
+                    User.create({
+                        username: req.body.username,
+                        email: req.body.email,
+                        password: hash
+                    }).then(newUser => {
+                        res.send({
+                            token_id: createToken(req.body.email)
+                        })
+                    }).catch(err => {
 
-            try {
-                const saveUser = await user.save();
-                res.send({
-                    token_id: createToken(req.body.email)
+                    })
+
                 });
-            } catch (err) {
-                res.send(err);
             }
-        }
+        }).catch(err => {
+            console.log(err);
+        });
     } else {
         res.status(400).send('You must send username and password');
     }
@@ -66,19 +71,32 @@ router.post('/users', async (req, res) => {
 
 router.post('/sessions/create', async (req, res) => {
 
-    if (!req.body.email || !req.body.password) {
+    if (!req.body.email && !req.body.password) {
         res.status(400).send('You must send email and password');
     } else {
-        const user = User.findOne({
+        console.log(req.body);
+        User.findOne({
             email: req.body.email
-        });
-        if (!user) {
-            res.status(401).send('Invalid email or password');
-        } else {
-            res.send({
-                token_id: createToken(req.body.email)
-            });
-        }
+        }).then(_user => {
+            if (!_user) {
+                res.status(401).send('Invalid email or password');
+            } else {
+                bcrypt.compare(req.body.password, _user.password, (err, result) => {
+
+                    if (!result) {
+                        res.status(401).send('Invalid email or password');
+                    } else {
+                        res.send({
+                            token_id: createToken(req.body.email)
+                        });
+                    }
+                })
+            }
+        }).catch(err => {
+            console.log(err);
+        })
+
+
     }
 });
 
