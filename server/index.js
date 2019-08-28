@@ -4,6 +4,8 @@ const user = require('./routes/user');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 dotenv.config();
+var cors = require('cors')
+
 //const transaction = require('./routes/transaction');
 
 // Connect to Mongodb
@@ -24,13 +26,21 @@ mongoose
 
 const router = express.Router();
 const app = express();
+
 app.use(bodyParser.urlencoded({
     extended: true
 }))
 app.use(bodyParser.json())
+//app.use(cors());
+
+var corsOptions = {
+    origin: 'http://localhost:8080',
+    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+}
 
 
-app.use('/', user);
+
+app.use('/', cors(corsOptions), user);
 //app.use('/', transaction);
 
 
