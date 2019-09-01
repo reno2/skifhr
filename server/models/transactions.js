@@ -12,6 +12,11 @@ const schema = new Schema({
     user: {
         type: Schema.Types.ObjectId,
         ref: 'User'
+    },
+    category: {
+        type: String,
+        default: 'standart',
+        enum: ['family', 'ddu', 'crime']
     }
 
 }, {

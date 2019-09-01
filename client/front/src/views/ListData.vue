@@ -1,15 +1,30 @@
 <template>
     <div class="about">
         <h1>All todos by logged user</h1>
+        <el-col :span="10" :offset="8">
+            <el-row>
+                <el-col :span="8">
+                    <el-input placeholder="Please input" v-model="datafiltername"></el-input>
+                </el-col>
+                <el-select v-model="value" placeholder="Select" :span="8">
+                    <el-option
+                        v-for="item in options"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                    ></el-option>
+                </el-select>
+            </el-row>
+        </el-col>
         <div class="container">
-            <transition-group
+            <!-- <transition-group
                 name="component-fade"
                 mode="out-in"
                 duration-enter="1.5"
                 duration-leave="2"
-            >
-                <list-item v-for="todo in todos" :key="todo.id" :todo="todo"></list-item>
-            </transition-group>
+            >-->
+            <list-item v-for="todo in methosFilterName" :key="todo.id" :todo="todo"></list-item>
+            <!-- </transition-group> -->
         </div>
     </div>
 </template>
@@ -22,11 +37,26 @@ export default {
     },
     data() {
         return {
+            datafiltername: '',
             todos: []
         };
     },
     methods: {},
     computed: {
+        dynamicTodos() {
+            return this.todos;
+        },
+        methosFilterName() {
+            let todos = this.todos;
+            if (this.datafiltername) {
+                todos = todos.filter(el => {
+                    return el.name.includes(this.datafiltername);
+                    // return el.name.indexOf(this.datafiltername) >= 0;
+                });
+            }
+            return todos;
+            //console.log(this.datafiltername);
+        },
         loggedIn() {
             return this.$store.getters.loggedIn;
         }
@@ -48,7 +78,10 @@ export default {
     }
 };
 </script>
-<style>
+<style scoped>
+.el-input {
+    margin-bottom: 20px;
+}
 .container {
     max-width: 600px;
     margin: 0 auto;

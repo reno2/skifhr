@@ -34,9 +34,9 @@ export default new Vuex.Store({
                         authorization: this.state.token
                     }
                 }).then(res => {
-                    resolve(true);
+                    resolve(true)
                 }).catch(err => {
-                    console.log(err);
+                    console.log(err)
                 })
             })
         },
@@ -90,7 +90,8 @@ export default new Vuex.Store({
                     .post(
                         'http://localhost:8000/api/protected/transactions', {
                             name: credentials.todo,
-                            amount: credentials.amount
+                            amount: credentials.amount,
+                            category: credentials.category
                         }, {
                             headers: {
                                 authorization: this.state.token

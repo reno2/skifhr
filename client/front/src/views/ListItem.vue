@@ -13,9 +13,20 @@
                 ></el-button>
                 <el-button style="display:none;float: right; padding: 3px 0" type="text">Удалить</el-button>
             </div>
-            amount: {{todo.amount}}
-            <br />
-            created date: {{todo.createdAt| moment("DD.MM.YYYY HH:mm")}}
+            <div class="todo-content">
+                <div class="todo-content__item todoc">
+                    <div class="todoc__l">amount:</div>
+                    <div class="todoc__r">{{todo.amount}}</div>
+                </div>
+                <div class="todo-content__item todoc">
+                    <div class="todoc__l">created date:</div>
+                    <div class="todoc__r">{{todo.createdAt| moment("DD.MM.YYYY HH:mm")}}</div>
+                </div>
+                <div class="todo-content__item todoc">
+                    <div class="todoc__l">category</div>
+                    <div class="todoc__r">{{todo.category}}</div>
+                </div>
+            </div>
         </el-card>
     </div>
 </template>
@@ -54,7 +65,7 @@ export default {
     created() {}
 };
 </script>
-<style>
+<style lang="scss">
 /* .hide {
     transition: all 100ms;
     opacity: 0;
@@ -86,5 +97,13 @@ li {
 .component-fade-enter, .component-fade-leave-to
 /* .component-fade-leave-active до версии 2.1.8 */ {
     opacity: 0;
+}
+.todoc {
+    margin-bottom: 4px;
+    display: flex;
+    justify-content: space-between;
+    .todoc__l {
+        font-weight: 900;
+    }
 }
 </style>

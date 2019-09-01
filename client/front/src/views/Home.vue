@@ -44,6 +44,8 @@ export default {
     },
     methods: {
         findItem() {
+            console.log('test');
+
             if (this.$store.getters.loggedIn) {
                 if (this.searchString.length > 0) {
                     this.$store

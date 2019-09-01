@@ -116,7 +116,7 @@ router.get("/api/protected/transactions", auth, (req, res) => {
                     Transactions.find({
                             user: _user._id
                         })
-                        .select("amount createdAt balance name")
+                        .select("amount createdAt balance name category")
                         .then(trans_token => {
                             res.send({
                                 trans_token
@@ -148,10 +148,13 @@ router.post("/api/protected/transactions", auth, (req, res) => {
                 .then(_user => {
                     console.log(_user.balance, req.body.amount);
                     if (parseInt(_user.balance) < maxBalance) {
+
+
                         Transactions.create({
                                 name: req.body.name,
                                 amount: req.body.amount,
-                                user: _user._id
+                                user: _user._id,
+                                category: req.body.category || null
                             })
                             .then(transition => {
                                 _user.balance =

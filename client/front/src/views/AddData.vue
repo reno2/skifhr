@@ -11,6 +11,17 @@
                     <span class="l-f__lable">AMOUNT</span>
                     <input class="l-f__input" type="text" v-model.number="amount" />
                 </div>
+                <div class="l-f__frap">
+                    <span class="l-f__lable">CATEGORY</span>
+                    <el-select v-model="category" placeholder="Select">
+                        <el-option
+                            v-for="item in options"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value"
+                        ></el-option>
+                    </el-select>
+                </div>
 
                 <div class>
                     <button @click="login">add</button>
@@ -24,6 +35,21 @@ export default {
     name: 'login',
     data() {
         return {
+            category: '',
+            options: [
+                {
+                    value: 'family',
+                    label: 'Family'
+                },
+                {
+                    value: 'ddu',
+                    label: 'DDU'
+                },
+                {
+                    value: 'crime',
+                    label: 'Crime'
+                }
+            ],
             todo: '',
             amount: ''
         };
@@ -37,7 +63,8 @@ export default {
                 this.$store
                     .dispatch('addTodo', {
                         todo: this.todo,
-                        amount: this.amount
+                        amount: this.amount,
+                        category: this.category
                     })
                     .then(data => {
                         //console.log(data.trans_token);
