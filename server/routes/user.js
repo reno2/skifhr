@@ -9,8 +9,9 @@ const bcrypt = require("bcrypt-nodejs");
 const maxBalance = 2000;
 
 function auth(req, res, next) {
+    console.log(req.headers["authorization"]);
     const token = req.headers["authorization"];
-    if (typeof token !== "undefined") {
+    if (typeof token !== "undefined" || !req.headers["authorization"]) {
         // const bearer = token.split(' ');
         // const bearerToken = bearer[1];
         req.token = token;
@@ -229,6 +230,7 @@ router.post("/api/protected/users/list", auth, async (req, res) => {
                 })
                 .limit(5)
                 .select("username id");
+            console.log(data);
             if (!data) {
                 res.status(401).send("Invalid user");
             } else {
@@ -236,6 +238,67 @@ router.post("/api/protected/users/list", auth, async (req, res) => {
                     data
                 });
             }
+        }
+    } else {
+        res.status(401).send("UnauthorizedError");
+    }
+});
+
+//======================================================================================
+// Filtered Transactions list
+// Фильтр принимат объект со сторокой, для поиска по таблице User и возращает найденного пользователей или сообщение что такого пользователя нет.
+router.post("/api/protected/transactions/list", auth, async (req, res) => {
+    const user = await jwt.verify(req.token, secret);
+    console.log(req.body.filter);
+    if (user) {
+        if (!req.body.filter) {
+            res.status(401).send("No search string");
+        } else {
+            const data = await Transactions.find({
+                    name: {
+                        $regex: req.body.filter,
+                        $options: "i"
+                    }
+                })
+                .limit(5)
+
+            console.log(data);
+            if (!data) {
+                res.status(401).send("Invalid user");
+            } else {
+                res.send({
+                    data
+                });
+            }
+        }
+    } else {
+        res.status(401).send("UnauthorizedError");
+    }
+});
+
+
+//======================================================================================
+// api/remove-item
+// Принимает Id записи в таблице и удаляет
+
+router.post("/api/remove-item", auth, async (req, res) => {
+    const user = await jwt.verify(req.token, secret);
+    //console.log(req.body.id);
+    if (user) {
+        if (!req.body.id) {
+            res.status(401).send("No id to remove");
+        } else {
+            const data = await Transactions.deleteOne({
+                _id: req.body.id
+            });
+            if (data) {
+                res.send({
+                    message: 'item delited'
+                });
+            } else {
+                res.status(401).send("Item not delited");
+            }
+
         }
     } else {
         res.status(401).send("UnauthorizedError");

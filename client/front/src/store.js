@@ -22,6 +22,24 @@ export default new Vuex.Store({
         }
     },
     actions: {
+
+
+        removeItem(context, id) {
+            //console.log(id);
+            return new Promise((resolve, reject) => {
+                axios.post('http://localhost:8000/api/remove-item', {
+                    id: id.id
+                }, {
+                    headers: {
+                        authorization: this.state.token
+                    }
+                }).then(res => {
+                    resolve(true);
+                }).catch(err => {
+                    console.log(err);
+                })
+            })
+        },
         logOut(context) {
             localStorage.removeItem('access_token');
             context.commit('destroyToken');
@@ -60,8 +78,9 @@ export default new Vuex.Store({
                         resolve(tkn);
                     })
                     .catch(err => {
-                        reject('failure reason');
-                        console.log(err);
+                        reject(err.response);
+                        // reject('failure reason');
+                        // console.log(err);
                     });
             });
         },
@@ -118,13 +137,56 @@ export default new Vuex.Store({
                     })
                     .then(user => {
 
-                        resolve(user);
+                        resolve(user)
                     })
                     .catch(err => {
                         reject('failure reason');
                         console.log(err);
                     });
             });
+        },
+        simpleUserSearch(context, payload) {
+
+            return new Promise((resolve, reject) => {
+                axios
+                    .post('http://localhost:8000/api/protected/users/list', {
+                        filter: payload.string
+                    }, {
+                        headers: {
+                            authorization: this.state.token
+                        }
+                    })
+                    .then(user => {
+
+                        resolve(user)
+                    })
+                    .catch(err => {
+                        reject('failure reason');
+                        console.log(err);
+                    });
+            });
+        },
+        simpleTransSearch(context, payload) {
+
+            return new Promise((resolve, reject) => {
+                axios
+                    .post('http://localhost:8000/api/protected/transactions/list', {
+                        filter: payload.string
+                    }, {
+                        headers: {
+                            authorization: this.state.token
+                        }
+                    })
+                    .then(user => {
+
+                        resolve(user)
+                    })
+                    .catch(err => {
+                        reject(err);
+
+                    });
+            });
+
         }
     }
 });
